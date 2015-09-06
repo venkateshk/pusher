@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Remove Markers</title>
+    <script src="https://js.pusher.com/2.2/pusher.min.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+#panel {
+  position: absolute;
+  top: 10px;
+  left: 25%;
+  z-index: 5;
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid #999;
+  text-align: center;
+}
+
+/**
+ * Provide the following styles for both ID and class, where ID represents an
+ * actual existing "panel" with JS bound to its name, and the class is just
+ * non-map content that may already have a different ID with JS bound to its
+ * name.
+ */
+
+#panel, .panel {
+  font-family: 'Roboto','sans-serif';
+  line-height: 30px;
+  padding-left: 10px;
+}
+
+#panel select, #panel input, .panel select, .panel input {
+  font-size: 15px;
+}
+
+#panel select, .panel select {
+  width: 100%;
+}
+
+#panel i, .panel i {
+  font-size: 12px;
+}
+
+    </style>
+  </head>
+  <body>
+    <div id="panel">
+      <input onclick="clearMarkers();" type=button value="Hide Markers">
+      <input onclick="showMarkers();" type=button value="Show All Markers">
+      <input onclick="deleteMarkers();" type=button value="Delete Markers">
+    </div>
+    <div id="map"></div>
+    <p>Click on the map to add markers.</p>
+    <script>
+
+// In the following example, markers appear when the user clicks on the map.
+// The markers are stored in an array.
+// The user can then click an option to hide, show or delete the markers.
+var map;
+var markers = [];
+
+function initMap() {
+  var vijayawada = {lat:16.5083, lng:80.6417};
+  var hyderabad = {lat:17.3700, lng:78.4800};
+  var Visakhapatnam = {lat:17.6883, lng:83.2186};
+
+  map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 5,
+    center: vijayawada,
+    //mapTypeId: google.maps.MapTypeId.TERRAIN
+  });
+
+  // This event listener will call addMarker() when the map is clicked.
+  /*map.addListener('click', function(event) {
+    //addMarker(event.latLng);
+    //deleteMarker(1);
+
+    addMarker(Visakhapatnam);
+  });*/
+
+  addMarker(vijayawada);
+  setTimeout(function () {
+    addMarker(hyderabad);
+   }, 5000);
+
+}
+
+
+function deleteMarker(i) {
+  markers[i].setMap(null);
+}
+
+
+// Adds a marker to the map and push to the array.
+function addMarker(location) {
+  //alert("adding marker lat: " + location.lat);
+  //alert("adding marker lng: " + location.lng);
+  //alert(map);
+  //alert(markers.length);
+  var marker = new google.maps.Marker({
+    animation: google.maps.Animation.DROP,
+    position: location,
+    map: map
+  });
+  markers.push(marker);
+}
+
+// Pusher Client - Adds a marker to the map and push to the array.
+function addPusherMarker(location) {
+  //alert("adding pusher marker " + location);
+  var latlng = location.split(",");
+  //alert(latlng);
+  //alert(latlng[0]);
+  //alert(latlng[1]);
+  var loc = {lat:latlng[0], lng:latlng[1]};
+  //alert(loc);
+  //alert(map);
+  var latlng1 = new google.maps.LatLng( latlng[0], latlng[1]);
+  addMarker(latlng1);
+  /*var marker = new google.maps.Marker({
+    position: latlng1,
+    map: map
+  });
+  markers.push(marker);*/
+}
+
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+
+// Removes the markers from the map, but keeps them in the array.
+function clearMarkers() {
+  setMapOnAll(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map);
+}
+
+// Deletes all markers in the array by removing references to them.
+function deleteMarkers() {
+  clearMarkers();
+  markers = [];
+}
+
+Pusher.log = function(message) {
+  if (window.console && window.console.log) {
+    window.console.log(message);
+  }
+};
+
+var pusher = new Pusher('3f344b89f59af5cd7cc1', {
+  encrypted: true
+});
+var channel = pusher.subscribe('test_channel');
+channel.bind('my_event', function(data) {
+  //alert(data.message);
+  addPusherMarker(data.message);
+});
+
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?signed_in=true&callback=initMap"></script>
+  </body>
+</html>

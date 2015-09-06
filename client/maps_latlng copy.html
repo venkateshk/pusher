@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="https://js.pusher.com/2.2/pusher.min.js"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["map"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Lat', 'Long', 'Name'],
+          [37.413272, -121.941181, 'Enso'],
+          [17.686816, 83.218482, 'Vizag'],
+          [16.506174,80.648015, 'Vijayawada']
+        ]);
+
+        var map = new google.visualization.Map(document.getElementById('map_div'));
+        map.draw(data, {showTip: true});
+      }
+
+    </script>
+    <script>
+      // Enable pusher logging - don't include this in production
+      Pusher.log = function(message) {
+        if (window.console && window.console.log) {
+          window.console.log(message);
+        }
+      };
+
+      var pusher = new Pusher('3f344b89f59af5cd7cc1', {
+        encrypted: true
+      });
+      var channel = pusher.subscribe('test_channel');
+      channel.bind('my_event', function(latlng) {
+        alert(latlng.message);
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="map_div"></div>
+  </body>
+</html>
