@@ -76,20 +76,6 @@ function initMap() {
     center: vijayawada,
     //mapTypeId: google.maps.MapTypeId.TERRAIN
   });
-
-  // This event listener will call addMarker() when the map is clicked.
-  /*map.addListener('click', function(event) {
-    //addMarker(event.latLng);
-    //deleteMarker(1);
-
-    addMarker(Visakhapatnam);
-  });*/
-
-  addMarker(vijayawada);
-  setTimeout(function () {
-    addMarker(hyderabad);
-   }, 5000);
-
 }
 
 
@@ -100,10 +86,6 @@ function deleteMarker(i) {
 
 // Adds a marker to the map and push to the array.
 function addMarker(location) {
-  //alert("adding marker lat: " + location.lat);
-  //alert("adding marker lng: " + location.lng);
-  //alert(map);
-  //alert(markers.length);
   var marker = new google.maps.Marker({
     animation: google.maps.Animation.DROP,
     position: location,
@@ -114,21 +96,9 @@ function addMarker(location) {
 
 // Pusher Client - Adds a marker to the map and push to the array.
 function addPusherMarker(location) {
-  //alert("adding pusher marker " + location);
   var latlng = location.split(",");
-  //alert(latlng);
-  //alert(latlng[0]);
-  //alert(latlng[1]);
-  var loc = {lat:latlng[0], lng:latlng[1]};
-  //alert(loc);
-  //alert(map);
-  var latlng1 = new google.maps.LatLng( latlng[0], latlng[1]);
-  addMarker(latlng1);
-  /*var marker = new google.maps.Marker({
-    position: latlng1,
-    map: map
-  });
-  markers.push(marker);*/
+  var loc = new google.maps.LatLng( latlng[0], latlng[1]);
+  addMarker(loc);
 }
 
 // Sets the map on all markers in the array.
@@ -165,7 +135,6 @@ var pusher = new Pusher('3f344b89f59af5cd7cc1', {
 });
 var channel = pusher.subscribe('test_channel');
 channel.bind('my_event', function(data) {
-  //alert(data.message);
   addPusherMarker(data.message);
 });
 
