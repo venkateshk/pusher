@@ -94,13 +94,6 @@ function addMarker(location) {
   markers.push(marker);
 }
 
-// Pusher Client - Adds a marker to the map and push to the array.
-function addPusherMarker(location) {
-  var latlng = location.split(",");
-  var loc = new google.maps.LatLng( latlng[0], latlng[1]);
-  addMarker(loc);
-}
-
 // Sets the map on all markers in the array.
 function setMapOnAll(map) {
   for (var i = 0; i < markers.length; i++) {
@@ -133,9 +126,12 @@ Pusher.log = function(message) {
 var pusher = new Pusher('3f344b89f59af5cd7cc1', {
   encrypted: true
 });
+
 var channel = pusher.subscribe('test_channel');
 channel.bind('my_event', function(data) {
-  addPusherMarker(data.message);
+  var latlng = data.message.split(",");
+  var location = new google.maps.LatLng( latlng[0], latlng[1]);
+  addMarker(location);
 });
 
     </script>
