@@ -7,4 +7,4 @@ p = pusher.Pusher(
   ssl=True,
   port=443
 )
-p.trigger('test_channel', 'my_event', {'message': '25.3700,85.1300'})
+p.trigger('test_channel', 'my_event', {'message': '37.413272,-121.941181'})

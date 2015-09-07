@@ -2,7 +2,6 @@
 <html>
   <head>
     <title>Remove Markers</title>
-    <script src="https://js.pusher.com/2.2/pusher.min.js"></script>
     <style>
       html, body {
         height: 100%;
@@ -72,12 +71,51 @@ function initMap() {
   var Visakhapatnam = {lat:17.6883, lng:83.2186};
 
   map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 5,
+    zoom: 2,
     center: vijayawada,
     //mapTypeId: google.maps.MapTypeId.TERRAIN
   });
+  WebSocketTest();
 }
 
+function WebSocketTest()
+{
+   if ("WebSocket" in window)
+   {
+      //alert("WebSocket is supported by your Browser!");
+
+      // Let us open a web socket
+      var ws = new WebSocket("ws://localhost:8887");
+
+      ws.onopen = function()
+      {
+         // Web Socket is connected, send data using send()
+         ws.send("Message to send");
+      };
+
+      ws.onmessage = function (evt)
+      {
+         var received_msg = evt.data;
+         if (received_msg.indexOf(',') > -1) {
+           var latlng = received_msg.split(",");
+           var location = new google.maps.LatLng( latlng[0], latlng[1]);
+           addMarker(location);
+         }
+      };
+
+      ws.onclose = function()
+      {
+         // websocket is closed.
+         alert("Connection is closed...");
+      };
+   }
+
+   else
+   {
+      // The browser doesn't support WebSocket
+      alert("WebSocket NOT supported by your Browser!");
+   }
+}
 
 function deleteMarker(i) {
   markers[i].setMap(null);
@@ -97,7 +135,7 @@ function addMarker(location) {
   });
   markers.push(marker);
   //bounds.extend(location);
-  map.panTo(location);
+  //map.panTo(location);
   //map.fitBounds(bounds);
 }
 
@@ -123,23 +161,6 @@ function deleteMarkers() {
   clearMarkers();
   markers = [];
 }
-
-Pusher.log = function(message) {
-  if (window.console && window.console.log) {
-    window.console.log(message);
-  }
-};
-
-var pusher = new Pusher('3f344b89f59af5cd7cc1', {
-  encrypted: true
-});
-
-var channel = pusher.subscribe('test_channel');
-channel.bind('my_event', function(data) {
-  var latlng = data.message.split(",");
-  var location = new google.maps.LatLng( latlng[0], latlng[1]);
-  addMarker(location);
-});
 
     </script>
     <script async defer
